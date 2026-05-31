@@ -106,6 +106,12 @@ AI（Antigravity CLI）によるコマンド実行時の「人間の都度承認
      - `docker compose down`
    - 一度これらが `allowed` に設定されると、エージェントはコンテナ内での `cargo`, `npm`, `pnpm`, `db` 操作などの開発コマンドを、ダイアログによる都度の手動承認なしでバックグラウンドにて爆速で実行可能になります。
 
+3. **Docker in Docker (DinD/DooD) への対応:**
+   - 作業用コンテナ（例: バックエンド開発やCI実行用コンテナ）の内部から、テスト環境用のデータベースコンテナなどを動的・自律的に立ち上げて統合テストを実施するケースを想定し、コンテナ内でのDockerコマンド実行（DinD/DooD）をサポートする設計にしてください。
+   - **第一選択肢（DooD: Docker-out-of-Docker）:** 開発の容易さとパフォーマンスの観点から、ホストマシンの Docker デーモンを共有するため、`docker-compose.yml` 等でホストの Docker ソケット（`/var/run/docker.sock:/var/run/docker.sock`）を作業用コンテナにボリュームマウントする構成を推奨します。
+   - **作業用コンテナ側の要件:** 作業用コンテナイメージのビルド定義（Dockerfile）には、必ず `docker` CLI や `docker-compose` 等のクライアントツールをインストールし、内部から外部の Docker デーモンを操作できるように設定してください。
+
+
 ---
 
 ## 🧠 Meta Memory: Project Template Architecture History
