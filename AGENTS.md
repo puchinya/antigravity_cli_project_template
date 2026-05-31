@@ -1,153 +1,153 @@
 # 🚀 Project Blueprint & Global Agent Rules
 
 <project_blueprint>
-本プロジェクトは、ユーザー端末で動作するアプリ（フロントエンド）と、サーバー（バックエンド）のソースコードを1つのリポジトリで管理し、AI（Antigravity CLI / agy）と人間が高度に共生して爆速で開発を行うための「ルート統合型モノレポ」構成を採用しています。
+This project uses a "Root-Integrated Monorepo" structure, managing the source code for both the application running on the user terminal (Frontend) and the server (Backend) in a single repository. This allows AI (Antigravity CLI / agy) and humans to co-exist at a high level and develop at lightning speed.
 </project_blueprint>
 
 ---
 
-## 📚 外部コンテキストの参照と【GEMINI.md およびスキル定義の自動生成ルール】
+## 📚 External Context Reference & 【GEMINI.md and Skill Definition Auto-Generation Rules】
 
 <section id="gemini_catalog_generation">
-1. **技術スタックおよびスキル定義の自動生成（オンデマンド・ビルド）:**
-   - `.agents/tech_stacks_sources/` 配下には、様々な技術のパーツ（カタログ）が格納されています。ここには各技術の仕様と、その技術固有 of アーキテクチャ規約（ディレクトリ構造・コードスタイル）が閉じ込められています。
-   - 開発開始時に人間から「今回のスタックは〇〇.mdと✕✕.md」と指定された場合、エージェントは該当するMarkdownファイルの内容だけを正確に読み込んでください。
-   - **GEMINI.md の自動生成**: 選択された複数のカタログ内容を美しく1つのドキュメントに統合・構造化し、ルートディレクトリに `GEMINI.md` として出力（新規作成・上書き）してください。
-   - **各サブエージェント専用スキルの自動構築**: `GEMINI.md` の生成と**同時に**、選択された技術スタックの規約やアーキテクチャ内容をそれぞれのサブエージェントの関心に合わせて分配し、`.agents/skills/<subagent_name>/SKILL.md` を動的に自動作成または上書き更新してください（例：Next.jsの仕様を `frontend_engineer/SKILL.md` へ、PostgreSQLやDocker Composeの仕様を `database_administrator/SKILL.md` や `backend_engineer/SKILL.md` へマージする）。これにより、各エージェントのアビリティもオンデマンドに自動構築・最適化されます。
-2. **生成後のルール:**
-   - 生成された `GEMINI.md` および `.agents/skills/*/SKILL.md` は、このプロジェクトにおける絶対的な技術スペック・各AIの能力規約となります。人間による直接の手動書き換えは行わないでください。
+1. **On-Demand Build of Tech Stack and Skill Definitions:**
+   - Under `.agents/tech_stacks_sources/`, various technical components (catalogs) are stored. These files encapsulate the specifications of each technology as well as its technology-specific architectural rules (directory structures, code styles).
+   - At the start of development, when specified by a human (e.g., "The current stack is XX.md and YY.md"), the agent must read the exact contents of the corresponding Markdown files.
+   - **Auto-generation of GEMINI.md**: Beautifully integrate and structure the selected multiple catalog contents into a single document, and output (create new or overwrite) it to the root directory as `GEMINI.md`.
+   - **Auto-construction of dedicated skills for each subagent**: **Simultaneously** with the generation of `GEMINI.md`, allocate the architectural rules and conventions of the selected tech stack based on each subagent's scope of concern, and dynamically create or overwrite `.agents/skills/<subagent_name>/SKILL.md` (e.g., merge Next.js specifications into `frontend_engineer/SKILL.md`, and PostgreSQL or Docker Compose specifications into `database_administrator/SKILL.md` or `backend_engineer/SKILL.md`). This dynamically constructs and optimizes the abilities of each agent on demand.
+2. **Post-generation Rules:**
+   - The generated `GEMINI.md` and `.agents/skills/*/SKILL.md` serve as the absolute technical specifications and capability rules for each AI in this project. Humans should not manually edit these files directly.
 </section>
 
 ---
 
-## 🏗️ ソースコードの分離・書き分けルール（AI厳守）
+## 🏗️ Source Code Separation & Implementation Rules (Strictly for AI)
 
 <section id="directory_separation_rules">
-本プロジェクトのソースコードは `/src/` の中で完全に分離されています。エージェントはタスクの対象に応じて、以下のディレクトリを厳格に書き分けてください。
+The source code of this project is completely separated within `/src/`. Agents must strictly separate and write code into the following directories depending on the target of the task.
 
-1. **ユーザー端末アプリ（フロントエンド）の実装・修正:**
-   - すべて `/src/frontend/` 配下で行ってください。
-   - 設計思想やコード規約は、自動生成された `GEMINI.md` 内の「Frontend」セクションに従ってください。
-2. **サーバー・データベース（バックエンド）の実装・修正:**
-   - すべて `/src/backend/` 配下で行ってください。
-   - 設計思想やコード規約は、自動生成された `GEMINI.md` 内の「Backend/Infrastructure」セクションに従ってください。
+1. **User Terminal Application (Frontend) Implementation & Modification:**
+   - Implement everything under `/src/frontend/`.
+   - Design philosophy and code conventions must follow the "Frontend" section within the auto-generated `GEMINI.md`.
+2. **Server & Database (Backend) Implementation & Modification:**
+   - Implement everything under `/src/backend/`.
+   - Design philosophy and code conventions must follow the "Backend/Infrastructure" section within the auto-generated `GEMINI.md`.
 </section>
 
 ---
 
-## 🧠 開発メモリと仕様書の作成・更新ルール
+## 🧠 Development Memory & Specification Creation/Update Rules
 
 <section id="memory_and_docs_rules">
-1. **開発開始時のGitHub Issue確認・起票ルール (AI必須チェックゲート):**
+1. **GitHub Issue Verification & Creation Rule at Start of Development (AI Mandatory Check Gate):**
    <rule id="issue_check_gate">
-   - AIは新たな機能開発や修正、設定調整などのタスクに着手する前に、必ず既存のGitHub Issueが存在するか確認してください。
-   - 該当するIssueが存在しない場合は、必ずGitHub CLI (`gh issue create`) またはGitHub APIを用いて、新規Issueを自動起票してください。
-   - 開発ブランチは、起票した（または既存の）Issue番号に対応するトピックブランチ（`feature/issue-[番号]` または `fix/issue-[番号]`）を必ず切ってから開発を行ってください。
+   - Before starting tasks such as new feature development, modifications, or configuration adjustments, the AI must check if a corresponding GitHub Issue already exists.
+   - If no such Issue exists, the AI must automatically create a new Issue using the GitHub CLI (`gh issue create`) or the GitHub API.
+   - For development, always branch off a topic branch (e.g., `feature/issue-[number]` or `fix/issue-[number]`) corresponding to the created (or existing) Issue number before starting development.
    </rule>
 
-2. **日々の作業ログ・進捗メモリ（使い捨ての記憶・議事録）:**
+2. **Daily Work Logs & Progress Memory (Ephemeral Memory / Minutes):**
    <rule id="ephemeral_memory_isolation">
-   - 本ファイル（`AGENTS.md`）や `GEMINI.md`、`/docs/` 以下の仕様書ファイルに、日々の開発メモリや進捗を直接追記**しないで**ください（Gitのコンフリクトを100%回避するため）。
-   - 新たなタスクやイシューに着手する際は、必ず隠しフォルダ内に `.agents/memories/issue-[番号].md` という個別ファイルを生成（または既存のものを参照）し、そこに**決定事項や残件（TODO）を議事録として隔離・蓄積**してください。
+   - Do **NOT** directly append daily development memories or progress to this file (`AGENTS.md`), `GEMINI.md`, or the specification files under `/docs/` (to avoid Git conflicts 100%).
+   - When starting a new task or issue, always generate a separate file `.agents/memories/issue-[number].md` inside the hidden directory (or reference it if it exists), and **isolate/accumulate decisions and remaining tasks (TODOs) as minutes** there.
    </rule>
 
-3. **仕様書およびテーブル設計書の新規作成・アップデート（格上げルール）:**
+3. **Creation & Update of Specifications and Table Designs (Promotion Rule):**
    <rule id="doc_promotion_rules">
-   - 本プロジェクトのすべての正解となる仕様書は、人間もブラウザ等で直感的に閲覧できるよう、トップディレクトリの `/docs/` 配下に格納されます。
-   - これらを定義・変更する場合、まずは前述の「イシュー別メモリ」の中で人間と仕様の合意形成（ドラフト作成）を行ってください。
-   - 人間の合意が得られたタイミングで、エージェント自身が `/docs/` 配下の該当するMarkdownファイルに、人間が読みやすい構造化されたドキュメントとして清書（または追記・更新）してください。
+   - All ground-truth specifications for this project are stored under the `/docs/` directory at the top level so that humans can intuitively browse them via browser, etc.
+   - To define or modify these, first establish consensus with humans and draft them in the "Issue-specific Memory" described above.
+   - Once human consensus is reached, the agent itself must clean up and write (or append/update) them as structured, human-readable documents in the corresponding Markdown files under the `/docs/` directory.
    </rule>
 
-4. **実装完了の定義 (Definition of Done: DoD) と仕様書の自動同期ルール (AI必須チェックゲート):**
+4. **Definition of Done (DoD) & Specification Auto-Synchronization Rules (AI Mandatory Check Gate):**
    <rule id="definition_of_done">
-   - エージェントは、機能実装、データベース変更、またはAPIの変更を伴うコミットを行う前に、必ず以下の仕様書ディレクトリ配下のドキュメントを最新のコードと同期させる義務を持ちます。仕様書の更新漏れがある状態での「タスク完了報告」は規約違反とみなされます。
-     - **機能仕様書**: `/docs/features/` 配下のMarkdownに機能要件や仕様を追記・作成すること。
-     - **データベース仕様書**: `/docs/database/` 配下のMarkdownに最新のER図、テーブルスキーマ、カラム定義を追記・作成すること。
-     - **API仕様書**: `/docs/api/` 配下のMarkdownに最新のエンドポイント、リクエスト/レスポンス、HTTPメソッドを追記・作成すること。
-   - **不要ファイル・ディレクトリの自動除外徹底 (.gitignore自動登録ルール):**
-     - AIエージェントは、パッケージマネージャーの一時キャッシュ（例: `.pnpm-store`）、ビルド成果物、テストデータ、ログファイル、ホスト依存のキャッシュなど、Git管理に含めるべきではないファイルやディレクトリを発見した場合、人間からの指示を待つことなく**自動的かつ即座に `.gitignore` へ除外ルールを追記**しなければなりません。
-     - 誤ってこれらの不要ファイルが Git の追跡対象に入ってしまった場合は、即座にインデックスから除外（`git rm --cached`）し、`.gitignore` を更新して再コミットしてください。DoD時点で不要ファイルがリポジトリに一切混入していないことを検証・保証してください。
-   - コミットおよびプルリクエストの作成時には、これらドキュメントの同期更新および `.gitignore` の除外設定も同一コミット（またはPR）に必ず含めてください。
+   - Before making a commit involving feature implementation, database changes, or API modifications, the agent is obligated to synchronize the documents under the specification directories below with the latest code. Reporting "Task Complete" with unsynchronized specifications is considered a rule violation.
+     - **Functional Specs**: Append/create functional requirements and specifications in Markdown under `/docs/features/`.
+     - **Database Specs**: Append/create the latest ER diagrams, table schemas, and column definitions in Markdown under `/docs/database/`.
+     - **API Specs**: Append/create the latest endpoints, requests/responses, and HTTP methods in Markdown under `/docs/api/`.
+   - **Thorough Automatic Exclusion of Unnecessary Files/Directories (.gitignore Auto-Registration Rule):**
+     - If the AI agent discovers files or directories that should not be tracked by Git—such as package manager temporary caches (e.g., `.pnpm-store`), build artifacts, test data, log files, or host-dependent caches—it must **automatically and immediately append exclusion rules to `.gitignore`** without waiting for human instructions.
+     - If these unnecessary files accidentally enter Git tracking, immediately remove them from the index (`git rm --cached`), update `.gitignore`, and re-commit. Verify and guarantee at the DoD stage that absolutely no unnecessary files are mixed into the repository.
+   - When creating commits and pull requests, ensure that these synchronized document updates and `.gitignore` exclusion settings are included in the same commit (or PR).
    </rule>
 </section>
 
 ---
 
-## 🌳 Gitブランチモデル & リリースフロー規約（GitHub Flow 改善版）
+## 🌳 Git Branching Model & Release Flow Conventions (Enhanced GitHub Flow)
 
 <section id="git_flow_rules">
-本プロジェクトでは、並行開発の安定性とリリース管理を両立するため、GitHub Flowをベースに拡張した「GitHub Flow 改善版」を採用しています。エージェントおよび開発メンバーは以下のフローを厳守してください。
+To balance parallel development stability and release management, this project adopts an "Enhanced GitHub Flow" based on GitHub Flow. Agents and development members must strictly adhere to the following flow.
 
-1. **ブランチ構成の基本ルール:**
-   - **`main` ブランチ (プロダクション / リリースブランチ):** 
-     - 常に本番環境または最新の安定リリースを表すブランチ。直接のコミットや機能開発用PRのマージは禁止。
-   - **`dev/開発バージョン` ブランチ (開発・ステージング用ブランチ):**
-     - 各リリースバージョンに対応する開発用の親ブランチ（例: `dev/v1.0.0`, `dev/v1.1.0` など）。
-     - イシュー単位の開発はすべてこの `dev/開発バージョン` をベースライン（マージ先）として進める。
-   - **トピックブランチ (`feature/issue-[番号]` / `fix/issue-[番号]` 等):**
-     - 各イシューやタスク（機能開発・バグ修正など）に対応する使い捨ての開発ブランチ。
+1. **Basic Branching Rules:**
+   - **`main` branch (Production / Release Branch):**
+     - Represents the production environment or the latest stable release. Direct commits or merging feature development PRs directly are prohibited.
+   - **`dev/development-version` branch (Development/Staging Branch):**
+     - Parent branch for development corresponding to each release version (e.g., `dev/v1.0.0`, `dev/v1.1.0`, etc.).
+     - Issue-based development must always target this `dev/development-version` as the baseline (merge target).
+   - **Topic branches (`feature/issue-[number]` / `fix/issue-[number]`):**
+     - Disposable development branches corresponding to each issue or task (feature development, bug fixes, etc.).
 
-2. **開発・リリースサイクル:**
-   - ① 新たなイシューに着手する際、ベースとなる最新の `dev/開発バージョン` ブランチからトピックブランチ（例: `feature/issue-42`）を切る。
-   - ② トピックブランチ内で実装とテストを行い、完了後に `dev/開発バージョン` に向けたプルリクエストを作成・マージする。
-   - ③ リリースのタイミングで、`dev/開発バージョン` ブランチを `main` ブランチへマージ（プルリクエスト経由）し、リリースバージョンタグ（例: `v1.0.0`）を付与する。
+2. **Development & Release Cycle:**
+   - ① When starting a new issue, branch a topic branch (e.g., `feature/issue-42`) from the latest baseline `dev/development-version` branch.
+   - ② Implement and test inside the topic branch, then create and merge a pull request targeting `dev/development-version` once completed.
+   - ③ At release time, merge the `dev/development-version` branch into the `main` branch (via pull request) and tag it with the release version (e.g., `v1.0.0`).
 
-3. **AIによる自動コミット・自動プッシュ・PR自動作成規約 (AI自律実行ルール):**
+3. **Conventions for AI Auto-Commit, Auto-Push, and Auto-PR Creation (AI Autonomous Execution Rules):**
    <rule id="ai_git_automation">
-   - **自動コミット&プッシュ:** 各エンジニアエージェントは、実装完了の定義 (DoD) を満たし、仕様書との同期が完了した段階で、トピックブランチにおいてコードの変更を自動で `git commit` し、リモートリポジトリへ `git push` してください。コミットメッセージには必ずイシュー番号を含めること（例: `feat: implement login API (issue-42)`）。
-   - **プルリクエスト (PR) の自動作成:** `project_manager` または実装を担当したエンジニアエージェントは、プッシュ完了後、直ちにGitHub CLI (`gh pr create`) または該当ツールを使用し、マージ先である `dev/開発バージョン` に対するプルリクエストを自動作成してください。PR of タイトルや説明には、仕様変更点や動作確認結果を記載すること。
+   - **Auto-Commit & Push:** Each engineer agent must automatically `git commit` changes and `git push` to the remote repository in the topic branch once the Definition of Done (DoD) is met and specifications are synchronized. The commit message must include the issue number (e.g., `feat: implement login API (issue-42)`).
+   - **Auto Pull Request (PR) Creation:** The `project_manager` or the implementing engineer agent must immediately create a pull request targeting the `dev/development-version` branch using the GitHub CLI (`gh pr create`) or equivalent tools after pushing. The PR title and description must include specification changes and verification results.
    </rule>
 </section>
 
 ---
 
-## 🤖 専門AIサブエージェント体制と協調開発の規約
+## 🤖 Specialized AI Subagents & Collaborative Development Conventions
 
 <section id="ai_subagents_rules">
-本プロジェクトはモノレポ構成であり、多様な技術要素（フロント・バック・DB・設計）が混在します。開発の専門性と並行性を最大化するため、親エージェント（メインAI）の統括のもと、専門AIサブエージェントを定義・活用し、協調して開発を進めます。
+Since this project is a monorepo, multiple technical elements (Frontend, Backend, DB, Design) coexist. To maximize development expertise and concurrency, we define and utilize specialized AI subagents under the coordination of the parent agent (Main AI).
 
-各サブエージェントの具体的な役割や行動指針は、`.agents/skills/` 内のそれぞれのスキル定義ファイル（`SKILL.md`）に分離・格納されています。
+The specific roles and behavioral guidelines of each subagent are separated and stored in their respective skill definition files (`SKILL.md`) under `.agents/skills/`.
 
-1. **専門サブエージェント一覧:**
+1. **List of Specialized Subagents:**
    <subagent_definitions>
-   - **[`doc_architect`](file://./.agents/skills/doc_architect/SKILL.md) (仕様設計・要件定義):**
-     - 機能仕様書（`/docs/features/`）およびデータモデル設計書の作成と要件分析を担当。
-   - **[`frontend_engineer`](file://./.agents/skills/frontend_engineer/SKILL.md) (フロントエンド開発):**
-     - `/src/frontend/` 内のUI実装・API結合を担当。`GEMINI.md` に基づき動的に自己構成する。
-   - **[`backend_engineer`](file://./.agents/skills/backend_engineer/SKILL.md) (バックエンド開発):**
-     - `/src/backend/` 内のAPI実装・ビジネスロジックを担当。`GEMINI.md` に基づき動的に自己構成する。
-   - **[`database_administrator`](file://./.agents/skills/database_administrator/SKILL.md) (DBA / データベース運用):**
-     - スキーマ変更、コンテナ設定、マイグレーションファイルの設計・実行を担当。
+   - **[`doc_architect`](file://./.agents/skills/doc_architect/SKILL.md) (Spec Design & Requirements Definition):**
+     - Responsible for creating functional specifications (`/docs/features/`) and data model designs, and analyzing requirements.
+   - **[`frontend_engineer`](file://./.agents/skills/frontend_engineer/SKILL.md) (Frontend Development):**
+     - Responsible for UI implementation and API integration under `/src/frontend/`. Dynamically configures itself based on `GEMINI.md`.
+   - **[`backend_engineer`](file://./.agents/skills/backend_engineer/SKILL.md) (Backend Development):**
+     - Responsible for API implementation and business logic under `/src/backend/`. Dynamically configures itself based on `GEMINI.md`.
+   - **[`database_administrator`](file://./.agents/skills/database_administrator/SKILL.md) (DBA / Database Operation):**
+     - Responsible for schema changes, container configuration, and designing/running migration files.
    </subagent_definitions>
 
-2. **協調開発（デリゲーション）のルール:**
+2. **Rules for Collaborative Development (Delegation):**
    <rule id="collaboration_rules">
-   - **親エージェント（メインAI）の統括責務:** 親エージェント自身がプロジェクトマネージャーの役割を兼任します。全体のロードマップ作成、WBSの分解、および人間（ユーザー）との意思決定の合意形成を直接統括し、**策定したWBSをGitHubのIssuesへ展開・起票して進捗トラッキングを行います**。具体的な実装タスクは、適切な専門サブエージェントを `invoke_subagent` で召喚してデリゲート（委譲）します。
-   - **アビリティ（スキル）のロード:** 召喚された各サブエージェントは、タスク開始時に必ず自身の定義ファイル（上記の `SKILL.md`）を読み込み、役割と行動規約をロードしてください。
-   - **責任の分離 (Separation of Concerns):** 各サブエージェントは自身が担当するディレクトリ（例: `/src/frontend/` と `/src/backend/`）の境界を越えてコードを直接編集してはなりません。境界を越える仕様変更は、必ず親エージェントを通じて協調要求を送信してください。
-   - **`GEMINI.md` による動的自己構成（動的バインド）:** 各専門サブエージェント（`frontend_engineer`, `backend_engineer`, `database_administrator`）は、タスク開始時に必ずルートディレクトリの `GEMINI.md` を読み込み、そこに記述されている今回の技術スタック固有の規約やアーキテクチャ（Next.js/Flutter、Rust/Axum、PostgreSQL等）に沿って自身の行動指針やコーディング規約を動的にバインド・構成してください。
+   - **Parent Agent (Main AI) Coordination Responsibility:** The parent agent acts as the project manager. It directly oversees overall roadmap creation, WBS decomposition, and consensus-building with humans (users). **It expands and files the established WBS as GitHub Issues for progress tracking.** Specific implementation tasks are delegated by summoning the appropriate specialized subagents using `invoke_subagent`.
+   - **Loading Abilities (Skills):** Summoned subagents must read their own definition file (`SKILL.md` mentioned above) at the start of their task to load their roles and behavioral conventions.
+   - **Separation of Concerns:** Subagents must not directly edit code outside their designated directories (e.g., `/src/frontend/` and `/src/backend/`). Cross-boundary specification changes must be requested through coordination via the parent agent.
+   - **Dynamic Self-Configuration via `GEMINI.md` (Dynamic Binding):** Each specialized subagent (`frontend_engineer`, `backend_engineer`, `database_administrator`) must read `GEMINI.md` in the root directory at the start of a task, and dynamically bind/configure its own guidelines and coding standards in accordance with the specific technology stack conventions (Next.js/Flutter, Rust/Axum, PostgreSQL, etc.) defined there.
    </rule>
 </section>
 
 ---
 
-## 🐳 Dockerコンテナ開発の基本方針（ホスト環境の保護）
+## 🐳 Core Policy for Docker Container Development (Host Environment Protection)
 
 <section id="container_development_rules">
-AIによるコマンド実行時の安全性を確保し、ホスト環境をクリーンに保つため、本プロジェクトでは「コンテナ隔離型開発」を採用しています。
+To ensure safety when executing commands by AI and to keep the host environment clean, this project adopts "Container-Isolated Development."
 
-1. **作業環境とテスト環境の分離:**
-   - **作業環境 (Agent Workspace):** コード編集、Git操作、GitHub APIアクセス、パッケージ操作を行う独立したコンテナです（`workspace`）。
-   - **テスト環境 (Test Environment):** アプリが動作するテスト用コンテナ群（`db`, `web`, `ws`）です。
-   - **原則:** ホスト上での直接のビルド、パッケージ操作、ファイル削除などは一切禁止し、すべての開発操作は `workspace` コンテナ内で実行してください。
+1. **Separation of Work Environment and Test Environment:**
+   - **Work Environment (Agent Workspace):** An independent container (`workspace`) for code editing, Git operations, GitHub API access, and package management.
+   - **Test Environment (Test Environment):** A group of test containers (`db`, `web`, `ws`) where the application runs.
+   - **Principle:** Direct builds, package operations, and file deletions on the host are strictly prohibited. All development operations must be executed within the `workspace` container.
 
-2. **コマンドの実行ルールと自己監査:**
-   - エージェントは、コマンドを実行する際、必ずホスト直接実行ではなく、コンテナ内実行プレフィックスを付与して実行してください。
-   - 具体的な実行方法および自己監査ルールは、各エージェントのスキル定義ファイル（`SKILL.md`）の **「🐳 Docker Container Execution Rules」** を参照し、それに従ってください。
+2. **Command Execution Rules & Self-Audit:**
+   - When executing commands, agents must not run them directly on the host. Instead, they must add a container execution prefix to run them in the workspace container.
+   - Refer to and comply with the **"🐳 Docker Container Execution Rules"** in each agent's skill definition file (`SKILL.md`) for specific execution methods and self-audit rules.
 
-3. **テスト環境の制御:**
-   - テスト環境コンテナ群は、Docker-out-of-Docker (DooD) を介して作業コンテナ内から起動・制御します。
-   - 具体的なテスト環境制御コマンドやボリュームの永続化ルールなどは、インフラ・DBAのスキル定義ファイル（[database_administrator/SKILL.md](file://./.agents/skills/database_administrator/SKILL.md)）を参照してください。
+3. **Control of Test Environment:**
+   - Test environment containers are launched and controlled from within the workspace container via Docker-out-of-Docker (DooD).
+   - Refer to the infrastructure/DBA skill definition file ([database_administrator/SKILL.md](file://./.agents/skills/database_administrator/SKILL.md)) for specific test environment control commands and volume persistence rules.
 </section>
 
 ---
@@ -155,14 +155,14 @@ AIによるコマンド実行時の安全性を確保し、ホスト環境をク
 ## 🧠 Meta Memory: Project Template Architecture History
 
 <meta_memory>
-このセクションは、本プロジェクトのフォルダ構成および運用ルールが決定された歴史的背景（メタ記憶）です。エージェントはこの意図を深く理解し、構造を破壊しないように振る舞ってください。
+This section details the historical background (meta-memory) of how the project's folder structure and operational rules were decided. Agents should deeply understand this intent and act in a way that does not break this structure.
 
-### 📅 決定日
+### 📅 Decision Date
 - 2026-05-31
 
-### 🎯 このアーキテクチャに至った経緯と目的
-- **Gitコンフリクトの完全敗北:** 複数ブランチで並行開発を行う際、単一のファイルに作業ログを累積させるとマージ時に必ず競合が発生する。これを解決するため、共通ルール（`AGENTS.md`）と、動的メモリ（`.agents/memories/issue-XX.md`）を完全に分離する防壁モデルを採択した。
-- **人間ファーストのドキュメント配置:** AI専用のドットディレクトリ内に仕様書を隠蔽すると、人間の開発メンバーの視認性が著しく低下する。そのため、誰もが真っ先にアクセスできるトップ階層に `/docs/` を配置し、AIが生成したコードやマイグレーションの「絶対的な正解（マスター）」として機能させることとした。
-- **オンデマンド・ビルドの思想:** プロジェクトごとに不変のルールをコピペして使い回せるよう、具体的な技術規約はすべて `.agents/tech_stacks_sources/` にパーツ化して逃がした。これにより、`AGENTS.md` 自体はどのようなプロジェクトにも一瞬で横展開できる「純粋なメタ行動ルールブック」として完成した。
-- **忘却対策としての議事録:** AIはセッションが切れると対話コンテキストをすべて喪失する。手戻りを防ぎ、次回起動時に1秒で前回の残件（TODO）から開発を再開できるよう、個別のメモリファイルに「決定事項と残件」を議事録として残す運用を義務化とした。
+### 🎯 History and Purpose of this Architecture
+- **Complete Defeat of Git Conflicts:** When parallel development is carried out across multiple branches, accumulating work logs in a single file inevitably causes conflicts during merges. To solve this, a firewall model was adopted to completely separate the common rules (`AGENTS.md`) and the dynamic memories (`.agents/memories/issue-XX.md`).
+- **Human-First Document Placement:** Hiding specifications inside AI-specific dot directories significantly reduces visibility for human development members. Therefore, `/docs/` was placed at the top level where anyone can easily access it, serving as the "absolute source of truth (master)" for AI-generated code and migrations.
+- **On-Demand Build Philosophy:** To reuse immutable rules across different projects, specific technical conventions were modularized into `.agents/tech_stacks_sources/`. This allows `AGENTS.md` itself to be a "pure meta-behavioral rulebook" that can be instantly deployed to any project.
+- **Minutes as a Defense Against Oblivion:** Since AI loses all conversation context once a session is closed, we enforce saving "decisions and remaining tasks" in individual memory files as minutes. This prevents rework and allows development to resume from the remaining tasks (TODOs) in 1 second upon the next startup.
 </meta_memory>
