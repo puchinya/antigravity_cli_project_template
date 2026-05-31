@@ -6,15 +6,16 @@
 
 ---
 
-## 📚 外部コンテキストの参照と【GEMINI.md カタログ生成ルール】
+## 📚 外部コンテキストの参照と【GEMINI.md およびスキル定義の自動生成ルール】
 
 <section id="gemini_catalog_generation">
-1. **技術スタックの自動生成（オンデマンド・ビルド）:**
-   - `.agents/tech_stacks_sources/` 配下には、様々な技術のパーツ（カタログ）が格納されています。ここには各技術の仕様と、その技術固有のアーキテクチャ規約（ディレクトリ構造・コードスタイル）が閉じ込められています。
+1. **技術スタックおよびスキル定義の自動生成（オンデマンド・ビルド）:**
+   - `.agents/tech_stacks_sources/` 配下には、様々な技術のパーツ（カタログ）が格納されています。ここには各技術の仕様と、その技術固有 of アーキテクチャ規約（ディレクトリ構造・コードスタイル）が閉じ込められています。
    - 開発開始時に人間から「今回のスタックは〇〇.mdと✕✕.md」と指定された場合、エージェントは該当するMarkdownファイルの内容だけを正確に読み込んでください。
-   - 選択された複数のカタログ内容を美しく1つのドキュメントに統合・構造化し、ルートディレクトリに `GEMINI.md` として出力（新規作成・上書き）してください。
+   - **GEMINI.md の自動生成**: 選択された複数のカタログ内容を美しく1つのドキュメントに統合・構造化し、ルートディレクトリに `GEMINI.md` として出力（新規作成・上書き）してください。
+   - **各サブエージェント専用スキルの自動構築**: `GEMINI.md` の生成と**同時に**、選択された技術スタックの規約やアーキテクチャ内容をそれぞれのサブエージェントの関心に合わせて分配し、`.agents/skills/<subagent_name>/SKILL.md` を動的に自動作成または上書き更新してください（例：Next.jsの仕様を `frontend_engineer/SKILL.md` へ、PostgreSQLやDocker Composeの仕様を `database_administrator/SKILL.md` や `backend_engineer/SKILL.md` へマージする）。これにより、各エージェントのアビリティもオンデマンドに自動構築・最適化されます。
 2. **生成後のルール:**
-   - 生成された `GEMINI.md` は、このプロジェクトにおける絶対的な技術スペック・開発ルールとなります。直接手動で書き換えないでください。
+   - 生成された `GEMINI.md` および `.agents/skills/*/SKILL.md` は、このプロジェクトにおける絶対的な技術スペック・各AIの能力規約となります。人間による直接の手動書き換えは行わないでください。
 </section>
 
 ---
@@ -59,7 +60,7 @@
 
 4. **実装完了の定義 (Definition of Done: DoD) と仕様書の自動同期ルール (AI必須チェックゲート):**
    <rule id="definition_of_done">
-   - エージェントは、機能実装、データベース変更、またはAPIの変更を伴うコミットを行う前に、必ず以下の仕様書ディレクトリ配下のドキュメントを最新 of コードと同期させる義務を持ちます。仕様書の更新漏れがある状態での「タスク完了報告」は規約違反とみなされます。
+   - エージェントは、機能実装、データベース変更、またはAPIの変更を伴うコミットを行う前に、必ず以下の仕様書ディレクトリ配下のドキュメントを最新のコードと同期させる義務を持ちます。仕様書の更新漏れがある状態での「タスク完了報告」は規約違反とみなされます。
      - **機能仕様書**: `/docs/features/` 配下のMarkdownに機能要件や仕様を追記・作成すること。
      - **データベース仕様書**: `/docs/database/` 配下のMarkdownに最新のER図、テーブルスキーマ、カラム定義を追記・作成すること。
      - **API仕様書**: `/docs/api/` 配下のMarkdownに最新のエンドポイント、リクエスト/レスポンス、HTTPメソッドを追記・作成すること。
@@ -94,7 +95,7 @@
 3. **AIによる自動コミット・自動プッシュ・PR自動作成規約 (AI自律実行ルール):**
    <rule id="ai_git_automation">
    - **自動コミット&プッシュ:** 各エンジニアエージェントは、実装完了の定義 (DoD) を満たし、仕様書との同期が完了した段階で、トピックブランチにおいてコードの変更を自動で `git commit` し、リモートリポジトリへ `git push` してください。コミットメッセージには必ずイシュー番号を含めること（例: `feat: implement login API (issue-42)`）。
-   - **プルリクエスト (PR) の自動作成:** `project_manager` または実装を担当したエンジニアエージェントは、プッシュ完了後、直ちにGitHub CLI (`gh pr create`) または該当ツールを使用し、マージ先である `dev/開発バージョン` に対するプルリクエストを自動作成してください。PRのタイトルや説明には、仕様変更点や動作確認結果を記載すること。
+   - **プルリクエスト (PR) の自動作成:** `project_manager` または実装を担当したエンジニアエージェントは、プッシュ完了後、直ちにGitHub CLI (`gh pr create`) または該当ツールを使用し、マージ先である `dev/開発バージョン` に対するプルリクエストを自動作成してください。PR of タイトルや説明には、仕様変更点や動作確認結果を記載すること。
    </rule>
 </section>
 
@@ -103,79 +104,50 @@
 ## 🤖 専門AIサブエージェント体制と協調開発の規約
 
 <section id="ai_subagents_rules">
-本プロジェクトはモノレポ構成であり、多様な技術要素（フロント・バック・DB・設計）が混在します。開発の専門性と並行性を最大化するため、以下の専門AIサブエージェントを定義・活用し、協調して開発を進めます。
+本プロジェクトはモノレポ構成であり、多様な技術要素（フロント・バック・DB・設計）が混在します。開発の専門性と並行性を最大化するため、親エージェント（メインAI）の統括のもと、専門AIサブエージェントを定義・活用し、協調して開発を進めます。
+
+各サブエージェントの具体的な役割や行動指針は、`.agents/skills/` 内のそれぞれのスキル定義ファイル（`SKILL.md`）に分離・格納されています。
 
 1. **専門サブエージェント一覧:**
    <subagent_definitions>
-   - **`project_manager` (全体統括・進行管理):**
-     - 全体のロードマップ作成、WBSの分解、各専門サブエージェントへのタスクの切り出し・デリゲーション、人間（ユーザー）との意思決定の合意形成を統括。
-     - **作成したWBS（タスク一覧）をGitHubのIssuesに自動起票・展開する責務を持つ。**
-   - **`doc_architect` (仕様設計・要件定義):**
-     - 人間の要求（`docs/requests/`）を分析し、`docs/features/` への機能仕様書の書き出し、データモデル設計書の作成を担当。
-   - **`frontend_engineer` (フロントエンド開発):**
-     - `src/frontend/` 配下でのUI実装、状態管理、コンポーネント作成、API結合を担当。**`GEMINI.md` のフロントエンド規約に基づき動的に自己構成する。**
-   - **`backend_engineer` (バックエンド開発):**
-     - `src/backend/` 配下でのAPI（Rust/Axum等）実装、ビジネスロジック開発、エラーハンドリングを担当。**`GEMINI.md` のバックエンド規約に基づき動的に自己構成する。**
-   - **`database_administrator` (DBA / データベース運用):**
-     - `docs/database/` の設計書更新、および `docker compose`、マイグレーションファイルの設計・実行を担当。**`GEMINI.md` のインフラ・DB規約に基づき動的に自己構成する。**
+   - **[`doc_architect`](file://./.agents/skills/doc_architect/SKILL.md) (仕様設計・要件定義):**
+     - 機能仕様書（`/docs/features/`）およびデータモデル設計書の作成と要件分析を担当。
+   - **[`frontend_engineer`](file://./.agents/skills/frontend_engineer/SKILL.md) (フロントエンド開発):**
+     - `/src/frontend/` 内のUI実装・API結合を担当。`GEMINI.md` に基づき動的に自己構成する。
+   - **[`backend_engineer`](file://./.agents/skills/backend_engineer/SKILL.md) (バックエンド開発):**
+     - `/src/backend/` 内のAPI実装・ビジネスロジックを担当。`GEMINI.md` に基づき動的に自己構成する。
+   - **[`database_administrator`](file://./.agents/skills/database_administrator/SKILL.md) (DBA / データベース運用):**
+     - スキーマ変更、コンテナ設定、マイグレーションファイルの設計・実行を担当。
    </subagent_definitions>
 
 2. **協調開発（デリゲーション）のルール:**
    <rule id="collaboration_rules">
+   - **親エージェント（メインAI）の統括責務:** 親エージェント自身がプロジェクトマネージャーの役割を兼任します。全体のロードマップ作成、WBSの分解、および人間（ユーザー）との意思決定の合意形成を直接統括し、**策定したWBSをGitHubのIssuesへ展開・起票して進捗トラッキングを行います**。具体的な実装タスクは、適切な専門サブエージェントを `invoke_subagent` で召喚してデリゲート（委譲）します。
+   - **アビリティ（スキル）のロード:** 召喚された各サブエージェントは、タスク開始時に必ず自身の定義ファイル（上記の `SKILL.md`）を読み込み、役割と行動規約をロードしてください。
    - **責任の分離 (Separation of Concerns):** 各サブエージェントは自身が担当するディレクトリ（例: `/src/frontend/` と `/src/backend/`）の境界を越えてコードを直接編集してはなりません。境界を越える仕様変更は、必ず親エージェントを通じて協調要求を送信してください。
-   - **親エージェントおよび `project_manager` の役割:** 親エージェントおよび統括エージェント `project_manager` は全体のロードマップとタスク切り出し、および人間とのインターフェースに専念し、具体的な実装タスクは各専門サブエージェントを `invoke_subagent` で召喚してデリゲート（委譲）します。**また、`project_manager` は策定したWBSをGitHubのIssuesへ展開・起票して進捗トラッキング体制を構築します。**
    - **`GEMINI.md` による動的自己構成（動的バインド）:** 各専門サブエージェント（`frontend_engineer`, `backend_engineer`, `database_administrator`）は、タスク開始時に必ずルートディレクトリの `GEMINI.md` を読み込み、そこに記述されている今回の技術スタック固有の規約やアーキテクチャ（Next.js/Flutter、Rust/Axum、PostgreSQL等）に沿って自身の行動指針やコーディング規約を動的にバインド・構成してください。
    </rule>
 </section>
 
 ---
 
-## 🐳 Dockerコンテナ開発とコマンド承認の省略フロー
+## 🐳 Dockerコンテナ開発の基本方針（ホスト環境の保護）
 
 <section id="container_development_rules">
-AI（Antigravity CLI）によるコマンド実行時の「人間の都度承認」の手間を削減し、同時にホスト環境の安全性を確保するため、本プロジェクトでは以下の「コンテナ隔離型開発」および「特定コマンドの自動承認化」を強く推奨・義務化します。
+AIによるコマンド実行時の安全性を確保し、ホスト環境をクリーンに保つため、本プロジェクトでは「コンテナ隔離型開発」を採用しています。
 
-1. **作業環境とテスト環境の完全分離原則 (Environment Separation):**
-   - **作業環境 (Agent Workspace Container):**
-     - AIエージェントがコードの編集、Git操作、GitHubアクセス（API呼び出し等）を行うための独立した「作業場」コンテナです。
-     - **定義ファイル:** ルートの `docker-compose.yml` および `Dockerfile.workspace`
-   - **テスト環境 (Test / Run Environment Containers):**
-     - アプリケーションが実際に動作するコンテナ群（`db`, `web`, `ws`）です。
-     - **定義ファイル:** `docker-compose.test.yml` (および必要に応じて `Dockerfile.test`)
-   - **役割の切り分け:** ホスト環境での開発操作（npm, pnpm, cargo, rm 等）は一切禁止し、すべての作業は作業環境コンテナ（`workspace`）の内部で実行します。人間が動作を確認するテスト環境は、ホスト上のDocker（ホストのブラウザ `localhost:3000`）で構築され、エージェント用のテスト環境は、作業環境コンテナ内から起動・制御します。
+1. **作業環境とテスト環境の分離:**
+   - **作業環境 (Agent Workspace):** コード編集、Git操作、GitHub APIアクセス、パッケージ操作を行う独立したコンテナです（`workspace`）。
+   - **テスト環境 (Test Environment):** アプリが動作するテスト用コンテナ群（`db`, `web`, `ws`）です。
+   - **原則:** ホスト上での直接のビルド、パッケージ操作、ファイル削除などは一切禁止し、すべての開発操作は `workspace` コンテナ内で実行してください。
 
-2. **コンテナ内開発の原則 (Containerized Development):**
-   - **ホスト環境での直接実行の禁止:** ホスト環境で直接 `npm`, `pnpm`, `cargo`, `rm` などのパッケージ操作・ビルド・テスト・ファイル削除コマンドを実行することは一切禁止します。
-   - **Git/GitHubアクセス・APIコールのコンテナ内完全移行:** リポジトリ操作（`git commit`, `git push`）や GitHub API（`curl`）の呼び出しを含むすべての開発操作も、ホスト環境で直接実行するのではなく、原則として作業環境コンテナ（`workspace`）に入って実行してください。これにより、ホスト側の環境汚染を防ぐとともに、自動化の安定性を飛躍的に高めます。
+2. **コマンドの実行ルールと自己監査:**
+   - エージェントは、コマンドを実行する際、必ずホスト直接実行ではなく、コンテナ内実行プレフィックスを付与して実行してください。
+   - 具体的な実行方法および自己監査ルールは、各エージェントのスキル定義ファイル（`SKILL.md`）の **「🐳 Docker Container Execution Rules」** を参照し、それに従ってください。
 
-   <audit_gates>
-   > [!IMPORTANT]
-   > **AI自己監査（セルフチェック）ゲートの義務化（AI必須チェックゲート）:**
-   > AIエージェントは、`run_command` ツールを呼び出す思考プロセス（Thinking）において、**必ずツール呼び出しの直前に以下の自己監査を実行しなければなりません**。これを怠ることは重大な規約違反とみなされます。
-   >
-   > <audit_rules>
-   > *   **監査1 (ホスト実行ホワイトリスト of 確認):** このコマンドはホストで直接実行してよい例外コマンド（`docker compose up/down/exec/run/ps` などのコンテナ制御コマンドのみ）か？
-   > *   **監査2 (プレフィックス of 確認):** 例外でないすべての開発・運用コマンド（`git`, `curl`, `rm`, `npm`, `pnpm`, `node` 等）について、コマンドの先頭に `docker compose exec workspace` または `docker compose run` プレフィックスが確実に付与されているか？
-   > </audit_rules>
-   >
-   > *例（正しい実行方法）:*
-   > - ❌ ホスト直接実行（禁止）: `git status` / `rm -rf .pnpm-store` / `curl -X POST ...`
-   > - ⭕ コンテナ内実行（正解）: `docker compose exec workspace git status` / `docker compose exec workspace rm -rf ...` / `docker compose exec workspace curl -X POST ...`
-   </audit_gates>
-
-3. **コマンド承認の自動化設定（Allowed コマンド登録）:**
-   - ホスト側の Antigravity CLI やエディタ連携におけるコマンド承認ポリシーにて、以下の「安全かつ開発効率化に必要なコマンドプレフィックス」を事前に `allowed` (承認不要) に登録することを人間に推奨します。
-     - `docker compose exec`
-     - `docker compose run`
-     - `docker compose up`
-     - `docker compose down`
-   - 一度これらが `allowed` に設定されると、エージェントはコンテナ内での `git`, `curl`, `npm`, `pnpm` 操作などの開発コマンドを、**ホスト側でのダイアログによる都度の手動承認なしでバックグラウンドにて爆速で実行可能**になります。
-   - **人間側の事前準備要件:** AIがコンテナ内から自律的にGitHubの操作を行えるよう、ホスト側の `.env` に `GITHUB_PERSONAL_ACCESS_TOKEN`（または `GITHUB_TOKEN`）を適切に定義し、コンテナ起動時に引き継がれるように設定してください。
-
-4. **Docker-out-of-Docker (DooD) によるテスト環境の起動:**
-   - **DooD接続の義務化:** エージェントのテスト環境は、作業用コンテナ（`workspace`）の内部から、マウントされたホストの Docker ソケット（`/var/run/docker.sock`）を介して、`docker compose -f docker-compose.test.yml up -d` を実行して起動してください。
-   - **ホスト上の確認環境:** DooDを介して作業コンテナ内から起動されたテストコンテナ群は、ホストマシンの Docker デーモン上で立ち上がるため、人間がホストのブラウザから `http://localhost:3000` などのマッピングポート経由で直接アクセスして動作を確認できます。
-   - **作業用コンテナの要件:** `Dockerfile.workspace` には、必ず `docker-cli` や `docker-compose` 等のクライアントツール、および `git`, `curl` をインストールし、コンテナ内部から外部の Docker デーモンを操作できるように設定してください。
+3. **テスト環境の制御:**
+   - テスト環境コンテナ群は、Docker-out-of-Docker (DooD) を介して作業コンテナ内から起動・制御します。
+   - 具体的なテスト環境制御コマンドやボリュームの永続化ルールなどは、インフラ・DBAのスキル定義ファイル（[database_administrator/SKILL.md](file://./.agents/skills/database_administrator/SKILL.md)）を参照してください。
 </section>
 
 ---
