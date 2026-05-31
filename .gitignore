@@ -12,4 +12,7 @@ build/
 
 # Antigravity CLI Cache
 .agents/cache/
+.antigravitycli
 .env
+.env.mcp
+
