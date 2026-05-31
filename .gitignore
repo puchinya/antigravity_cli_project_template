@@ -1,0 +1,15 @@
+# Node.js (Backend / Frontend tools)
+node_modules/
+dist/
+.next/
+*.log
+
+# Flutter / Mobile (Frontend)
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+
+# Antigravity CLI Cache
+.agents/cache/
+.env
